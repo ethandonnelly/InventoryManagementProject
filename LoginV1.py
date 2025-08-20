@@ -1,6 +1,7 @@
 from sqlalchemy import ForeignKey, create_engine
 from sqlalchemy.orm import declarative_base, mapped_column, Mapped, sessionmaker, relationship
 
+
 database_url = ""
 engine = create_engine(database_url)
 
@@ -29,21 +30,30 @@ class User(AbstractBaseClass):
         return f"{self.username}/{self.password}"
 
     @staticmethod
-    def choose_username():
-        pass
-
-    @staticmethod
-    def choose_password():
-        pass
-
-    @staticmethod
     def hash_password(key):
         return ord(key)
 
     @staticmethod
-    def create_account():
-        pass
+    def validate_new_username_and_password(username, password):
+        if 4 <= len(username) <= 30:
+            if 7 <= len(password) <= 30:
+                hashed_password = User.hash_password(password)
+                new_user = User(username=username, password=hashed_password)
+                session.add(new_user)
+                return True
+            else:
+                return "Password needs to be between 7 and 30 characters"
+        else:
+            return "Username needs to be 4 and 30 characters"
 
     @staticmethod
-    def login():
-        pass
+    def validate_existing_username_and_password(username, password):
+        if session.query(User).filter(User.username == username, User.password == password):
+            return True, username
+        else:
+            return "Incorrect Username or Password"
+
+
+
+
+
